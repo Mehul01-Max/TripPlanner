@@ -6,6 +6,27 @@ import { Button } from "./button";
 import { Calendar } from "./calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 
+function useResponsiveMonths() {
+  const [numberOfMonths, setNumberOfMonths] = React.useState(1);
+
+  React.useEffect(() => {
+    const checkWidth = () => {
+      setNumberOfMonths(window.innerWidth >= 640 ? 2 : 1);
+    };
+
+    // Initial check
+    checkWidth();
+
+    // Add event listener
+    window.addEventListener("resize", checkWidth);
+
+    // Cleanup
+    return () => window.removeEventListener("resize", checkWidth);
+  }, []);
+
+  return numberOfMonths;
+}
+
 export default function DatePickerWithRange({ className, selected, onSelect }) {
   const [date, setDate] = React.useState(
     selected || {
@@ -13,6 +34,7 @@ export default function DatePickerWithRange({ className, selected, onSelect }) {
       to: undefined,
     }
   );
+  const numberOfMonths = useResponsiveMonths();
 
   React.useEffect(() => {
     if (selected) {
@@ -61,7 +83,7 @@ export default function DatePickerWithRange({ className, selected, onSelect }) {
             defaultMonth={date?.from}
             selected={date}
             onSelect={handleSelect}
-            numberOfMonths={2}
+            numberOfMonths={numberOfMonths}
           />
         </PopoverContent>
       </Popover>
