@@ -1,14 +1,17 @@
 import { MenuContext } from "../App";
 import React, { useContext, useState, useEffect } from "react";
 import { Input } from "./ui/input";
-import { Search } from "lucide-react";
+import { Search, AlertCircle, Delete } from "lucide-react";
 import { Link } from "react-router-dom";
 import MyTripCard from "./MyTripCard";
-
+import { Button } from "./ui/button";
+import DeletePopup from "./DeletePopup";
+import { Popover } from "./ui/popover";
 function MyTrips() {
   const { isOpen, setIsOpen } = useContext(MenuContext);
   const [trips, setTrips] = useState([]);
-
+  const [search, setSearch] = useState("");
+  // const [showPopup, setShowPopup] = useState(false);
   useEffect(() => {
     const storedTrips = localStorage.getItem("trip");
     if (storedTrips) {
@@ -16,6 +19,7 @@ function MyTrips() {
     }
   }, []);
   const handleDelete = (id) => {
+    // setShowPopup(true);
     const filteredTrips = trips.filter((trip) => trip.id != id);
     setTrips(filteredTrips);
     localStorage.setItem("trip", JSON.stringify(filteredTrips));
@@ -38,19 +42,43 @@ function MyTrips() {
               type="text"
               placeholder="Search trip by name or destination..."
               className="pl-10 text-[#3E668E] placeholder:text-[#3E668E]"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="grid gap-6 lg:grid-cols-3 md:grid-cols-2">
-            {trips.map((trip) => (
-              <MyTripCard
-                key={trip.id}
-                TripName={trip.tripName}
-                destination={trip.destination}
-                dates={trip.dates}
-                onClick={() => handleDelete(trip.id)}
-              />
-            ))}
+            {trips.map(
+              (trip) =>
+                (trip.tripName.toLowerCase().includes(search) ||
+                  trip.destination.toLowerCase().includes(search)) && (
+                  <MyTripCard
+                    key={trip.id}
+                    id={trip.id}
+                    TripName={trip.tripName}
+                    destination={trip.destination}
+                    dates={trip.dates}
+                    onClick={() => handleDelete(trip.id)}
+                  />
+                )
+            )}
           </div>
+          {trips.length === 0 ? (
+            <div className="flex flex-col justify-center items-center mt-6 py-10 max-w-md m-auto">
+              <div className="bg-[#E6EAEE] rounded-full p-3 mb-4">
+                <AlertCircle />
+              </div>
+              <div className="font-bold text-xl mb-2">No trips found</div>
+              <div className="text-[#3E668E] text-center mb-6">
+                You haven't added any trips yet. Start planning your next
+                adventure now!
+              </div>
+              <Link to="/addtrip">
+                <Button className="bg-[#269DD8] text-white hover:bg-[#41A6DC] rounded-md">
+                  Create Your Frist Trip
+                </Button>
+              </Link>
+            </div>
+          ) : null}
         </div>
       )}
     </>

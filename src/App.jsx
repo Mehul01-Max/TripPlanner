@@ -5,6 +5,7 @@ import Home from "./components/Home";
 import AddTripCard from "./components/AddTripCard";
 import MyTrips from "./components/MyTrips";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ViewDetails from "./components/ViewDetails";
 
 export const MenuContext = createContext();
 
@@ -19,6 +20,7 @@ function App() {
             <Route index element={<Home />}></Route>
             <Route path="/addtrip" element={<AddTripCard />}></Route>
             <Route path="/mytrips" element={<MyTrips />}></Route>
+            <Route path="/mytrips/:id" element={<ViewDetails />}></Route>
           </Route>
         </Routes>
       </BrowserRouter>

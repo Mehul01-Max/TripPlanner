@@ -83,6 +83,11 @@ export default function DatePickerWithRange({ className, selected, onSelect }) {
             defaultMonth={date?.from}
             selected={date}
             onSelect={handleSelect}
+            disabled={(date) => {
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              return date < today;
+            }}
             numberOfMonths={numberOfMonths}
           />
         </PopoverContent>
