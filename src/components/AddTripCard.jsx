@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
+import ShortUniqueId from "short-unique-id";
 import { Button } from "./ui/button";
 import {
   Form,
@@ -17,7 +17,7 @@ import DatePickerWithRange from "./ui/date-select";
 import { Textarea } from "./ui/textarea";
 import { useContext } from "react";
 import { MenuContext } from "../App";
-
+import { Navigate, useNavigate } from "react-router-dom";
 const formSchema = z.object({
   tripName: z.string().min(2, {
     message: "Trip name must be at least 2 characters.",
@@ -54,16 +54,17 @@ export default function AddTripCard() {
       notes: "",
     },
   });
-
+  const navigate = useNavigate();
   function onSubmit(values) {
     const trip = localStorage.getItem("trip");
-    console.log(values);
+    const uid = new ShortUniqueId({ length: 10 });
     localStorage.setItem(
       "trip",
       trip
-        ? JSON.stringify([...JSON.parse(trip), values])
-        : JSON.stringify([values])
+        ? JSON.stringify([...JSON.parse(trip), { id: uid.rnd(), ...values }])
+        : JSON.stringify([{ id: uid.rnd(), ...values }])
     );
+    navigate("/mytrips");
   }
   const { isOpen, setIsOpen } = useContext(MenuContext);
   return (
